@@ -2,12 +2,36 @@
 //
 
 #include <iostream>
-
+#include <string>
+using namespace std;
 int main()
 {
     std::cout << "Hello World!\n";
 }
+//Parte 2 hecho por Xavi 
+string* buscarEspacio(string** matriz, int f, int c) { //Se guarda el contenido de la variable "nombre" en la dirección de memoria que apunta el puntero
+    return &matriz[f][c]; //Al tener la dirección (string*), puedes modificar el contenido de esa celda directamente desde otra parte del programa.
+}
 
+void registrarCurso(string** matriz) {
+    int fila, columna;
+    string nombre;
+
+    cout << "\n--- Registrar Curso ---" << endl;
+    cout << "Ingrese bloque horario (0-6): "; cin >> fila;
+    cout << "Ingrese dia (0-5): "; cin >> columna;
+
+    if (fila >= 0 && fila < 7 && columna >= 0 && columna < 6) {
+        cout << "Nombre del curso (una sola palabra): ";
+        cin >> nombre;
+        string* ptrCelda = buscarEspacio(matriz, fila, columna); //obtenemos la direccion de la matriz usando punteros :V
+        *ptrCelda = nombre; //hacemos que "nombre" se transforme a una matriz para guardar informacion de manera mas eficaz y manipulable pez
+        cout << "¡Curso registrado con exito!" << endl;
+    }
+    else {
+        cout << "Error: Indices fuera de rango." << endl;
+    }
+}
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
 // Depurar programa: F5 o menú Depurar > Iniciar depuración
 
