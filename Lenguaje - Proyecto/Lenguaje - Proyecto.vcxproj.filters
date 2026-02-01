@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Lenguaje - Proyecto.cpp">
+    <ClCompile Include="Chrono Class.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
