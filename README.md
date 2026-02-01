@@ -1,5 +1,5 @@
 # Chrono Class 
-Sistema de Gestión Académica Universitaria** desarrollado en C++.
+**Sistema de Gestión Académica Universitaria** desarrollado en C++.
 
 ## Descripción
 Chrono Class permite organizar el horario semanal (7 bloques x 6 días) de una institución educativa utilizando estructuras de datos avanzadas.
