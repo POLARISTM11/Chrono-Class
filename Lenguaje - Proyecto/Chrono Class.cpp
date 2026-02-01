@@ -3,94 +3,134 @@
 #include <iostream>
 #include <string>
 
-#define FILAS 7
-#define COLUMNAS 6
+#define MAX_FILAS_HORAS 7
+#define MAX_COLUMNAS_DIAS 6
 
 using namespace std;
 
-// --- PARTE 1: MEMORIA ---
+// --- PARTE 1: GESTIÓN DE MEMORIA ---
 string** crearMatriz() {
-    string** matriz = new string * [FILAS];
-    for (int i = 0; i < FILAS; i++) matriz[i] = new string[COLUMNAS];
-    return matriz;
+    string** matrizHorario = new string * [MAX_FILAS_HORAS];
+    for (int filaContador = 0; filaContador < MAX_FILAS_HORAS; filaContador++) {
+        matrizHorario[filaContador] = new string[MAX_COLUMNAS_DIAS];
+    }
+    return matrizHorario;
 }
 
-void inicializar(string** matriz) {
-    for (int i = 0; i < FILAS; i++) {
-        for (int j = 0; j < COLUMNAS; j++) matriz[i][j] = "---";
+void inicializar(string** matrizHorario) {
+    for (int indiceFila = 0; indiceFila < MAX_FILAS_HORAS; indiceFila++) {
+        for (int indiceColumna = 0; indiceColumna < MAX_COLUMNAS_DIAS; indiceColumna++) {
+            matrizHorario[indiceFila][indiceColumna] = "---";
+        }
     }
+}
+
+void liberarMemoria(string** matrizHorario) {
+    for (int bloqueHorario = 0; bloqueHorario < MAX_FILAS_HORAS; bloqueHorario++) {
+        delete[] matrizHorario[bloqueHorario];
+    }
+    delete[] matrizHorario;
 }
 
 // --- PARTE 2: REGISTRO (XAVI) ---
-string* buscarEspacio(string** matriz, int f, int c) {
-    return &matriz[f][c];
+string* buscarEspacio(string** matrizHorario, int filaSeleccionada, int columnaSeleccionada) {
+    return &matrizHorario[filaSeleccionada][columnaSeleccionada];
 }
 
-void registrarCurso(string** matriz) {
-    int f, c;
-    string nombre;
+void registrarCurso(string** matrizHorario) {
+    int filaIngresada, columnaIngresada;
+    string nombreDelCurso;
     cout << "\n--- Registrar Curso ---\n";
-    cout << "Bloque (0-6): "; cin >> f;
-    cout << "Dia (0-5): "; cin >> c;
+    cout << "Ingrese Bloque Horario (0-6): "; cin >> filaIngresada;
+    cout << "Ingrese Dia (0-5): "; cin >> columnaIngresada;
 
-    if (f >= 0 && f < FILAS && c >= 0 && c < COLUMNAS) {
+    if (filaIngresada >= 0 && filaIngresada < MAX_FILAS_HORAS &&
+        columnaIngresada >= 0 && columnaIngresada < MAX_COLUMNAS_DIAS) {
+
         cout << "Nombre del curso: ";
-        cin.ignore(); // LIMPIEZA: Quita el 'enter' anterior
-        getline(cin, nombre); // SOLUCIÓN: Permite nombres con espacios
+        cin.ignore();
+        getline(cin, nombreDelCurso);
 
-        string* celda = buscarEspacio(matriz, f, c);
-        *celda = nombre;
-        cout << "¡Registrado con exito!\n";
+        string* celdaDestino = buscarEspacio(matrizHorario, filaIngresada, columnaIngresada);
+        *celdaDestino = nombreDelCurso;
+        cout << "¡Curso registrado con exito!\n";
     }
-    else cout << "Error: Fuera de rango.\n";
+    else {
+        cout << "Error: Indices fuera de rango.\n";
+    }
 }
 
 // --- PARTE 3: REPORTES (KEVIN) ---
-void MostrarHorarioCompleto(string** Horario) {
-    string dias[6] = { "Lun", "Mar", "Mie", "Jue", "Vie", "Sab" };
-    cout << "\n\tHORA\t";
-    for (int i = 0; i < 6; i++) cout << dias[i] << "\t";
-    cout << "\n\t--------------------------------------------------\n";
+void MostrarHorarioCompleto(string** Horario, int HorasTotales, int DiasTotales) {
+    string DiasSemana[6] = { "Lunes","Martes","Miercoles","Jueves","Viernes","Sabado" };
+    int anchoColumna = 10;
 
-    for (int i = 0; i < FILAS; i++) {
-        // CAMBIO: (+8) para que empiece a las 8:00 AM
-        cout << "\t" << (i + 8) << ":00\t";
-        for (int j = 0; j < COLUMNAS; j++) cout << Horario[i][j] << "\t";
-        cout << endl;
+    cout << "\n\t=======================================Horario Completo====================================================\n";
+    cout << "\tHora\t";
+
+    for (int dias = 0; dias < DiasTotales; dias++) {
+        string nombreDia = DiasSemana[dias];
+        int espacios = anchoColumna - nombreDia.length();
+        cout << nombreDia;
+        for (int espacio = 0; espacio < espacios; espacio++) cout << " ";
+        cout << "\t";
     }
+    cout << "\n\t-------------------------------------------------------------------------------------------------------";
+    cout << "\n";
+
+    for (int fila = 0; fila < HorasTotales; fila++) {
+        cout << "\t" << (fila + 8) << ":00\t";
+
+        for (int columna = 0; columna < DiasTotales; columna++) {
+            string curso = Horario[fila][columna];
+            int espaciosCurso = anchoColumna - curso.length();
+
+            cout << curso;
+            for (int espacio = 0; espacio < espaciosCurso; espacio++) cout << " ";
+            cout << "\t";
+        }
+        cout << "\n";
+    }
+    cout << "\n\t===========================================================================================================\n";
 }
 
 // --- PARTE 4: PROCESAMIENTO (HAYLIE) ---
-void contar_horas(string** matriz) {
-    string buscar;
-    int contador = 0;
-    cout << "\n¿Curso a contar?: ";
-    cin.ignore(); // LIMPIEZA: Evita que se salte la pregunta
-    getline(cin, buscar);
+void contar_horas(string** matrizHorario) {
+    string cursoABuscar;
+    int totalBloquesEncontrados = 0;
+    cout << "\n¿De que curso quieres contar las horas?: ";
+    cin.ignore();
+    getline(cin, cursoABuscar);
 
-    for (int i = 0; i < FILAS; i++) {
-        for (int j = 0; j < COLUMNAS; j++) {
-            if (matriz[i][j] == buscar) contador++;
+    for (int filaBusqueda = 0; filaBusqueda < MAX_FILAS_HORAS; filaBusqueda++) {
+        for (int columnaBusqueda = 0; columnaBusqueda < MAX_COLUMNAS_DIAS; columnaBusqueda++) {
+            if (matrizHorario[filaBusqueda][columnaBusqueda] == cursoABuscar) {
+                totalBloquesEncontrados++;
+            }
         }
     }
-    cout << "Resultado: [" << buscar << "] tiene " << contador << " bloque(s).\n";
+    cout << "Resultado: " << cursoABuscar << " tiene " << totalBloquesEncontrados << " horas." << endl;
 }
 
 int main() {
-    string** horarioPrincipal = crearMatriz();
-    inicializar(horarioPrincipal);
+    string** horarioAcademico = crearMatriz();
+    inicializar(horarioAcademico);
 
-    int opcion;
+    int opcionSeleccionada;
     do {
-        cout << "\n>>> CHRONO CLASS <<<\n1. Registrar\n2. Ver Todo\n3. Contar\n4. Salir\nOpcion: ";
-        cin >> opcion;
-        switch (opcion) {
-        case 1: registrarCurso(horarioPrincipal); break;
-        case 2: MostrarHorarioCompleto(horarioPrincipal); break;
-        case 3: contar_horas(horarioPrincipal); break;
-        }
-    } while (opcion != 4);
+        cout << "\n>>> SISTEMA CHRONO CLASS <<<\n";
+        cout << "1. Registrar Curso\n2. Ver Horario Completo\n3. Contar Horas\n4. Salir\nOpcion: ";
+        cin >> opcionSeleccionada;
 
+        switch (opcionSeleccionada) {
+        case 1: registrarCurso(horarioAcademico); break;
+        case 2: MostrarHorarioCompleto(horarioAcademico, MAX_FILAS_HORAS, MAX_COLUMNAS_DIAS); break;
+        case 3: contar_horas(horarioAcademico); break;
+        case 4: cout << "Saliendo y liberando memoria..."; break;
+        }
+    } while (opcionSeleccionada != 4);
+
+    liberarMemoria(horarioAcademico);
     return 0;
 }
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
